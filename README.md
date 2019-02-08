@@ -35,6 +35,6 @@ This way, we add a little overhead by saving multiple 4byte lengths of chunks, b
 For the fastest speed and smallest overhead use chunksize:<br>
 ```(FileSize / CPUCount)```
 
-**F.A.Q.:**
-Q: Why using BlockingCollection?
+**F.A.Q.:**<br>
+Q: Why using BlockingCollection?<br>
 A: By using BlockingCollection we throttle ussage of memory resources. It is because if we wouldn't throttle that, we could easily run out of memory when compressing some really large files (3GB+). We actualy do not throttle anything, because compressing and decompressing is much slower that file read/write, so the real bottleneck are tasks that are doing compression/decompression.
