@@ -4,9 +4,9 @@ In modern era of multi-core CPUs this is a problem.
 Goal of this repository is to determine the best algorithm and parameters for given file type structure. e.g. Your application generates binary file in some format with some data. This library should help you find best algorithm with parameters best suited to your file structure type.
 
 **This library contains 3 projects:**
-- CP.Storage - This contains ICompressor interface, ParallelWrapper that wraps another compressor and parallelizes compression and decompression and few implementations of compression algorithms
-- Tests/CP.Storage.Tests.Unit - Unit tests mainly for ParallelProcessor and some tests for combination of ParallelProcessor wrapping DeflateCompressor
-- Tests/CP.Storage.Tests.Benchmark - This is a benchmark that tests speeds between non-parallel compressor and parallel compressor. On my CPU, there is mostly 2-5x speedup in compression and approx same speed with decompression
+- src/ParallelizeCompression - This contains ICompressor interface, ParallelWrapper that wraps another compressor and parallelizes compression and decompression and few implementations of compression algorithms
+- test/ParallelizeCompression.Tests.Unit - Unit tests mainly for ParallelProcessor and some tests for combination of ParallelProcessor wrapping DeflateCompressor
+- test/ParallelizeCompression.Benchmark - This is a benchmark that tests speeds between non-parallel compressor and parallel compressor. On my CPU, there is mostly 2-5x speedup in compression and approx same speed with decompression
 
 **Compression algorithms implemented as Compressors:**
 - Deflate (System.IO.Compression from Microsoft)
