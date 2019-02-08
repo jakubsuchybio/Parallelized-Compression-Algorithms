@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.IO;
 using Xunit;
 
-namespace CP.Storage.UnitTests
+namespace ParallelCompression.Tests.Unit
 {
     public class ConcurrentDictionaryTests
     {
@@ -16,7 +15,7 @@ namespace CP.Storage.UnitTests
             var concurrentDictionary = new ConcurrentDictionary<int, MemoryStream>();
 
             // Act
-            bool result = concurrentDictionary.TryRemove(0, out var memoryStream);
+            bool result = concurrentDictionary.TryRemove(0, out MemoryStream memoryStream);
 
             // Assert
             Assert.False(result);

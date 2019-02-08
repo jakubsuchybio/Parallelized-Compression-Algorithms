@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace CP.Storage.Compressors
+namespace ParallelCompression.Interfaces
 {
     public interface ICompressor
     {

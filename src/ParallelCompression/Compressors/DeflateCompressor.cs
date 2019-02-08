@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using ParallelCompression.Interfaces;
 
-namespace CP.Storage.Compressors
+namespace ParallelCompression.Compressors
 {
     public class DeflateCompressor : ICompressor
     {
@@ -9,7 +10,7 @@ namespace CP.Storage.Compressors
 
         public void Compress(Stream source, Stream destination, int compressionLevel)
         {
-            var compressionLevelInner = (CompressionLevel)compressionLevel;
+            var compressionLevelInner = (CompressionLevel) compressionLevel;
             using (var compressionStream = new DeflateStream(destination, compressionLevelInner, true))
             {
                 source.CopyTo(compressionStream);

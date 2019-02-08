@@ -1,7 +1,6 @@
 ﻿using System;
-using BenchmarkDotNet.Running;
 
-namespace CP.Storage.BenchmarkTests
+namespace ParallelCompression.Benchmark
 {
     public static class Program
     {
@@ -13,7 +12,6 @@ namespace CP.Storage.BenchmarkTests
             //Console.WriteLine(summary2);
 
             RealDataTest.Run();
-
 
 
             Console.ReadLine();

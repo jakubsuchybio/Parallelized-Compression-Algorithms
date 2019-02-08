@@ -1,7 +1,8 @@
-﻿using Ionic.Zlib;
-using System.IO;
+﻿using System.IO;
+using Ionic.Zlib;
+using ParallelCompression.Interfaces;
 
-namespace CP.Storage.Compressors
+namespace ParallelCompression.Compressors
 {
     public class IonicGZipCompressor : ICompressor
     {
@@ -9,7 +10,7 @@ namespace CP.Storage.Compressors
 
         public void Compress(Stream source, Stream destination, int compressionLevel)
         {
-            var zlipCompressionLevel = (CompressionLevel)compressionLevel;
+            var zlipCompressionLevel = (CompressionLevel) compressionLevel;
             using (var compressionStream = new GZipStream(destination, CompressionMode.Compress, zlipCompressionLevel, true))
             {
                 source.CopyTo(compressionStream);

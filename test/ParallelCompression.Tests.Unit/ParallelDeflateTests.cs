@@ -1,12 +1,10 @@
-﻿using CP.Storage.Compressors;
-using CP.Storage.Compressors.Parallelization;
-using Moq;
-using System;
+﻿using System;
 using System.IO;
+using ParallelCompression.Compressors;
+using ParallelCompression.Parallelization;
 using Xunit;
-using static CP.Storage.Constants.Sizes;
 
-namespace CP.Storage.UnitTests
+namespace ParallelCompression.Tests.Unit
 {
     public class ParallelDeflateTests
     {
@@ -31,64 +29,10 @@ namespace CP.Storage.UnitTests
         }
 
         [Fact]
-        public void CompressSmallerThanChunkSize()
-        {
-            // Assign
-            int chunkSize = 1 * MB;
-            var random = new Random();
-            var buffer = new byte[chunkSize - 1];
-            random.NextBytes(buffer);
-
-            var input = new MemoryStream(buffer);
-            var compressed = new MemoryStream();
-            var decompressed = new MemoryStream();
-
-            var deflateCompressor = new IonicDeflateCompressor();
-            var parallelCompressor = new ParallelizationWrappingCompressor(deflateCompressor, null, chunkSize);
-
-            // Act
-            parallelCompressor.Compress(input, compressed, 0);
-            compressed.Position = 0;
-            parallelCompressor.Decompress(compressed, decompressed);
-
-            // Assert
-            Assert.True(input.Length == chunkSize - 1);
-            Assert.True(decompressed.Length == chunkSize - 1);
-            Assert.Equal(input.ToArray(), decompressed.ToArray());
-        }
-
-        [Fact]
-        public void CompressSmallestChunkSize()
-        {
-            // Assign
-            int chunkSize = 1;
-            var random = new Random();
-            var buffer = new byte[1];
-            random.NextBytes(buffer);
-
-            var input = new MemoryStream(buffer);
-            var compressed = new MemoryStream();
-            var decompressed = new MemoryStream();
-
-            var deflateCompressor = new IonicDeflateCompressor();
-            var parallelCompressor = new ParallelizationWrappingCompressor(deflateCompressor, null);
-
-            // Act
-            parallelCompressor.Compress(input, compressed, 0);
-            compressed.Position = 0;
-            parallelCompressor.Decompress(compressed, decompressed);
-
-            // Assert
-            Assert.True(input.Length == chunkSize);
-            Assert.True(decompressed.Length == chunkSize);
-            Assert.Equal(input.ToArray(), decompressed.ToArray());
-        }
-
-        [Fact]
         public void CompressLargerThanChunkSize()
         {
             // Assign
-            int chunkSize = 2;
+            var chunkSize = 2;
             var random = new Random();
             var buffer = new byte[chunkSize + 1];
             random.NextBytes(buffer);
@@ -115,7 +59,7 @@ namespace CP.Storage.UnitTests
         public void CompressMultipleTimesLargerThanChunkSize()
         {
             // Assign
-            int chunkSize = 1 * MB;
+            int chunkSize = 1 * Constants.Sizes.MB;
             var random = new Random();
             var buffer = new byte[chunkSize];
             random.NextBytes(buffer);
@@ -125,7 +69,61 @@ namespace CP.Storage.UnitTests
             var decompressed = new MemoryStream();
 
             var deflateCompressor = new IonicDeflateCompressor();
-            var parallelCompressor = new ParallelizationWrappingCompressor(deflateCompressor, null, 1*KB);
+            var parallelCompressor = new ParallelizationWrappingCompressor(deflateCompressor, null, 1 * Constants.Sizes.KB);
+
+            // Act
+            parallelCompressor.Compress(input, compressed, 0);
+            compressed.Position = 0;
+            parallelCompressor.Decompress(compressed, decompressed);
+
+            // Assert
+            Assert.True(input.Length == chunkSize);
+            Assert.True(decompressed.Length == chunkSize);
+            Assert.Equal(input.ToArray(), decompressed.ToArray());
+        }
+
+        [Fact]
+        public void CompressSmallerThanChunkSize()
+        {
+            // Assign
+            int chunkSize = 1 * Constants.Sizes.MB;
+            var random = new Random();
+            var buffer = new byte[chunkSize - 1];
+            random.NextBytes(buffer);
+
+            var input = new MemoryStream(buffer);
+            var compressed = new MemoryStream();
+            var decompressed = new MemoryStream();
+
+            var deflateCompressor = new IonicDeflateCompressor();
+            var parallelCompressor = new ParallelizationWrappingCompressor(deflateCompressor, null, chunkSize);
+
+            // Act
+            parallelCompressor.Compress(input, compressed, 0);
+            compressed.Position = 0;
+            parallelCompressor.Decompress(compressed, decompressed);
+
+            // Assert
+            Assert.True(input.Length == chunkSize - 1);
+            Assert.True(decompressed.Length == chunkSize - 1);
+            Assert.Equal(input.ToArray(), decompressed.ToArray());
+        }
+
+        [Fact]
+        public void CompressSmallestChunkSize()
+        {
+            // Assign
+            var chunkSize = 1;
+            var random = new Random();
+            var buffer = new byte[1];
+            random.NextBytes(buffer);
+
+            var input = new MemoryStream(buffer);
+            var compressed = new MemoryStream();
+            var decompressed = new MemoryStream();
+
+            var deflateCompressor = new IonicDeflateCompressor();
+            var parallelCompressor = new ParallelizationWrappingCompressor(deflateCompressor, null);
 
             // Act
             parallelCompressor.Compress(input, compressed, 0);

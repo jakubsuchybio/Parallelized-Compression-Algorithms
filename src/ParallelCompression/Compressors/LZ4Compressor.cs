@@ -1,8 +1,9 @@
-﻿using K4os.Compression.LZ4;
+﻿using System.IO;
+using K4os.Compression.LZ4;
 using K4os.Compression.LZ4.Streams;
-using System.IO;
+using ParallelCompression.Interfaces;
 
-namespace CP.Storage.Compressors
+namespace ParallelCompression.Compressors
 {
     public class LZ4Compressor : ICompressor
     {
@@ -12,9 +13,9 @@ namespace CP.Storage.Compressors
         {
             var settings = new LZ4EncoderSettings
             {
-                CompressionLevel = (LZ4Level)compressionLevel
+                CompressionLevel = (LZ4Level) compressionLevel
             };
-            using (var compressionStream = LZ4Stream.Encode(destination, settings, leaveOpen: true))
+            using (LZ4EncoderStream compressionStream = LZ4Stream.Encode(destination, settings, true))
             {
                 source.CopyTo(compressionStream);
             }
@@ -22,7 +23,7 @@ namespace CP.Storage.Compressors
 
         public void Decompress(Stream source, Stream destination)
         {
-            using(var compressionStream = LZ4Stream.Decode(destination, leaveOpen: true))
+            using (LZ4DecoderStream compressionStream = LZ4Stream.Decode(destination, leaveOpen: true))
             {
                 source.CopyTo(compressionStream);
             }

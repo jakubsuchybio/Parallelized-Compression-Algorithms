@@ -1,27 +1,24 @@
-﻿using BenchmarkDotNet.Attributes;
-using CP.Storage.Compressors;
-using CP.Storage.Compressors.Parallelization;
-using System;
+﻿using System;
 using System.IO;
-using static CP.Storage.Constants.Sizes;
+using BenchmarkDotNet.Attributes;
+using ParallelCompression.Compressors;
+using ParallelCompression.Parallelization;
 
-namespace CP.Storage.BenchmarkTests
+namespace ParallelCompression.Benchmark
 {
     [MemoryDiagnoser]
     public class ParallelVsSequential
     {
         public MemoryStream Input { get; set; }
 
-        [Params(1 * MB)]
-        public int ChunkSize { get; set; }
+        [Params(1 * Constants.Sizes.MB)] public int ChunkSize { get; set; }
 
-        [Params(0, 5, 9)]
-        public int Compressionlevel { get; set; }
+        [Params(0, 5, 9)] public int Compressionlevel { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
-            int chunkSize = 100 * MB;
+            int chunkSize = 100 * Constants.Sizes.MB;
             var random = new Random();
             var buffer = new byte[chunkSize];
             random.NextBytes(buffer);

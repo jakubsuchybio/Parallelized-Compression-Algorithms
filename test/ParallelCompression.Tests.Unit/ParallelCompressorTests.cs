@@ -1,12 +1,11 @@
-﻿using CP.Storage.Compressors;
-using CP.Storage.Compressors.Parallelization;
-using Moq;
-using System;
+﻿using System;
 using System.IO;
+using Moq;
+using ParallelCompression.Interfaces;
+using ParallelCompression.Parallelization;
 using Xunit;
-using static CP.Storage.Constants.Sizes;
 
-namespace CP.Storage.UnitTests
+namespace ParallelCompression.Tests.Unit
 {
     public class ParallelCompressorTests
     {
@@ -31,34 +30,10 @@ namespace CP.Storage.UnitTests
         }
 
         [Fact]
-        public void CompressSmallerThanChunkSize()
-        {
-            // Assign
-            int chunkSize = 1 * MB;
-            var random = new Random();
-            var buffer = new byte[chunkSize - 1];
-            random.NextBytes(buffer);
-            var input = new MemoryStream(buffer);
-            var output = new MemoryStream();
-            var wrappedCompressor = new Mock<ICompressor>();
-            wrappedCompressor
-                .Setup(x => x.Compress(It.IsAny<MemoryStream>(), It.IsAny<MemoryStream>(), It.IsAny<int>()))
-                .Callback((Stream source, Stream destination, int compressionLevel) => source.CopyTo(destination));
-            var parallelCompressor = new ParallelizationWrappingCompressor(wrappedCompressor.Object, null, chunkSize);
-
-            // Act
-            parallelCompressor.Compress(input, output, 0);
-
-            // Assert
-            Assert.True(input.Length == chunkSize - 1);
-            Assert.True(output.Length == chunkSize - 1);
-        }
-
-        [Fact]
         public void CompressLargerThanChunkSize()
         {
             // Assign
-            int chunkSize = 1 * MB;
+            int chunkSize = 1 * Constants.Sizes.MB;
             var random = new Random();
             var buffer = new byte[chunkSize + 1];
             random.NextBytes(buffer);
@@ -82,7 +57,7 @@ namespace CP.Storage.UnitTests
         public void CompressMultipleTimesLargerThanChunkSize()
         {
             // Assign
-            int chunkSize = 10 * MB;
+            int chunkSize = 10 * Constants.Sizes.MB;
             var random = new Random();
             var buffer = new byte[chunkSize];
             random.NextBytes(buffer);
@@ -92,7 +67,7 @@ namespace CP.Storage.UnitTests
             wrappedCompressor
                 .Setup(x => x.Compress(It.IsAny<MemoryStream>(), It.IsAny<MemoryStream>(), It.IsAny<int>()))
                 .Callback((Stream source, Stream destination, int compressionLevel) => source.CopyTo(destination));
-            var parallelCompressor = new ParallelizationWrappingCompressor(wrappedCompressor.Object, null, 1 * MB);
+            var parallelCompressor = new ParallelizationWrappingCompressor(wrappedCompressor.Object, null, 1 * Constants.Sizes.MB);
 
             // Act
             parallelCompressor.Compress(input, output, 0);
@@ -100,6 +75,30 @@ namespace CP.Storage.UnitTests
             // Assert
             Assert.True(input.Length == chunkSize);
             Assert.True(output.Length == chunkSize);
+        }
+
+        [Fact]
+        public void CompressSmallerThanChunkSize()
+        {
+            // Assign
+            int chunkSize = 1 * Constants.Sizes.MB;
+            var random = new Random();
+            var buffer = new byte[chunkSize - 1];
+            random.NextBytes(buffer);
+            var input = new MemoryStream(buffer);
+            var output = new MemoryStream();
+            var wrappedCompressor = new Mock<ICompressor>();
+            wrappedCompressor
+                .Setup(x => x.Compress(It.IsAny<MemoryStream>(), It.IsAny<MemoryStream>(), It.IsAny<int>()))
+                .Callback((Stream source, Stream destination, int compressionLevel) => source.CopyTo(destination));
+            var parallelCompressor = new ParallelizationWrappingCompressor(wrappedCompressor.Object, null, chunkSize);
+
+            // Act
+            parallelCompressor.Compress(input, output, 0);
+
+            // Assert
+            Assert.True(input.Length == chunkSize - 1);
+            Assert.True(output.Length == chunkSize - 1);
         }
     }
 }

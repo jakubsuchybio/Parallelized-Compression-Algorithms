@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CP.Storage.BenchmarkTests.Utils
+namespace ParallelCompression.Benchmark.Utils
 {
     public class MemoryWatch
     {

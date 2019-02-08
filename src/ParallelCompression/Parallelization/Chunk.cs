@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace CP.Storage.Compressors.Parallelization
+namespace ParallelCompression.Parallelization
 {
     public class Chunk
     {

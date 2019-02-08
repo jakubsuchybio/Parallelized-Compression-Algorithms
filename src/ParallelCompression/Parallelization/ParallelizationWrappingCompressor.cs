@@ -1,27 +1,23 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
-using System.Buffers;
+using ParallelCompression.Interfaces;
 
-namespace CP.Storage.Compressors.Parallelization
+namespace ParallelCompression.Parallelization
 {
     /// <summary>
-    /// Wrapping compressor for parallelization of another compressor
+    ///     Wrapping compressor for parallelization of another compressor
     /// </summary>
     public class ParallelizationWrappingCompressor : ICompressor
     {
-        private readonly ICompressor _wrappedCompressor;
-        private readonly IProgress<int> _progress;
         private readonly int _chunkSize;
+        private readonly IProgress<int> _progress;
+        private readonly ICompressor _wrappedCompressor;
 
-        private BlockingCollection<Chunk> _compressionChunks;
-        private BlockingCollection<Chunk> _decompressionChunks;
-
-        public string CompressedFileExtension =>
-            _wrappedCompressor.CompressedFileExtension;
+        private readonly BlockingCollection<Chunk> _compressionChunks;
+        private readonly BlockingCollection<Chunk> _decompressionChunks;
 
         public ParallelizationWrappingCompressor(ICompressor wrappedCompressor, IProgress<int> progress, int chunkSize = 1 * Constants.Sizes.MB)
         {
@@ -45,9 +41,13 @@ namespace CP.Storage.Compressors.Parallelization
             _decompressionChunks = new BlockingCollection<Chunk>(degreeOfParallelization);
         }
 
+        public string CompressedFileExtension =>
+            _wrappedCompressor.CompressedFileExtension;
+
         /// <summary>
-        /// Splits source stream into chunks, parallelizes computation of wrapped ICompressor on chunks and merges results to destination stream.
-        /// It blocks until the source stream is fully compressed into destination stream
+        ///     Splits source stream into chunks, parallelizes computation of wrapped ICompressor on chunks and merges results to
+        ///     destination stream.
+        ///     It blocks until the source stream is fully compressed into destination stream
         /// </summary>
         /// <param name="source">Source stream that will be chunked and compressed in parallel</param>
         /// <param name="destination">Destination stream of merged parallel results</param>
@@ -55,10 +55,10 @@ namespace CP.Storage.Compressors.Parallelization
         public void Compress(Stream source, Stream destination, int compressionLevel)
         {
             // Split source into chunks and compress
-            var readingTask = Task.Run(() => ReadSourceIntoChunksAndCompress(source, compressionLevel));
+            Task readingTask = Task.Run(() => ReadSourceIntoChunksAndCompress(source, compressionLevel));
 
             // Merge chunks
-            var mergingTask = Task.Run(() => MergeCompressedChunks(destination));
+            Task mergingTask = Task.Run(() => MergeCompressedChunks(destination));
 
             Task.WaitAll(readingTask, mergingTask);
         }
@@ -66,17 +66,17 @@ namespace CP.Storage.Compressors.Parallelization
         public void Decompress(Stream source, Stream destination)
         {
             // Split source into chunks and decompress
-            var readingTask = Task.Run(() => ReadSourceIntoChunksAndDecompress(source));
+            Task readingTask = Task.Run(() => ReadSourceIntoChunksAndDecompress(source));
 
             // Merge chunks
-            var mergingTask = Task.Run(() => MergeDecompressedChunks(destination));
+            Task mergingTask = Task.Run(() => MergeDecompressedChunks(destination));
 
             Task.WaitAll(readingTask, mergingTask);
         }
 
         private async Task ReadSourceIntoChunksAndCompress(Stream source, int compressionLevel)
         {
-            int count = 1;
+            var count = 1;
             int bytesRead;
             ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
             while (source.Position < source.Length)
@@ -89,19 +89,20 @@ namespace CP.Storage.Compressors.Parallelization
                     InputStream = new MemoryStream(buffer, 0, bytesRead)
                 };
                 _compressionChunks.Add(chunk);
-                var _ = Task.Factory
+                Task _ = Task.Factory
                     .StartNew(() => CompressChunk(chunk, compressionLevel))
                     .ContinueWith(t => arrayPool.Return(buffer, true));
 
 
-                _progress?.Report((int)(source.Position * 100 / source.Length));
+                _progress?.Report((int) (source.Position * 100 / source.Length));
             }
+
             _compressionChunks.CompleteAdding();
         }
 
         private void CompressChunk(Chunk chunk, int compressionLevel)
         {
-            var output = new MemoryStream((int)chunk.InputStream.Length);
+            var output = new MemoryStream((int) chunk.InputStream.Length);
             _wrappedCompressor.Compress(chunk.InputStream, output, compressionLevel);
             chunk.OutputStream = output;
             chunk.Completed = true;
@@ -109,9 +110,6 @@ namespace CP.Storage.Compressors.Parallelization
 
         private async Task MergeCompressedChunks(Stream destination)
         {
-            destination.WriteByte(ArchivationMethod.Parallel.ToByte());
-            destination.WriteByte(ArchivationAlgorithm.Deflate.ToByte());
-
             while (_compressionChunks.Count != 0 || !_compressionChunks.IsAddingCompleted)
             {
                 Chunk chunk;
@@ -124,7 +122,7 @@ namespace CP.Storage.Compressors.Parallelization
                 while (!chunk.Completed)
                     await Task.Delay(1);
 
-                int length = (int)chunk.OutputStream.Length;
+                var length = (int) chunk.OutputStream.Length;
                 await destination.WriteAsync(BitConverter.GetBytes(length), 0, 4);
                 await destination.WriteAsync(chunk.OutputStream.GetBuffer(), 0, length);
             }
@@ -132,11 +130,7 @@ namespace CP.Storage.Compressors.Parallelization
 
         private async Task ReadSourceIntoChunksAndDecompress(Stream source)
         {
-            // Read header
-            var parallelization = (ArchivationMethod)source.ReadByte();
-            var method = (ArchivationAlgorithm)source.ReadByte();
-
-            int count = 1;
+            var count = 1;
             var lengthBuffer = new byte[4];
 
             ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
@@ -157,16 +151,17 @@ namespace CP.Storage.Compressors.Parallelization
                 };
                 _decompressionChunks.Add(chunk);
 
-                var _ = Task.Factory
+                Task _ = Task.Factory
                     .StartNew(() => DecompressChunk(chunk))
-                    .ContinueWith(t=>arrayPool.Return(buffer));
+                    .ContinueWith(t => arrayPool.Return(buffer));
             }
+
             _decompressionChunks.CompleteAdding();
         }
 
         private void DecompressChunk(Chunk chunk)
         {
-            var output = new MemoryStream((int)chunk.InputStream.Length);
+            var output = new MemoryStream((int) chunk.InputStream.Length);
             _wrappedCompressor.Decompress(chunk.InputStream, output);
             chunk.OutputStream = output;
             chunk.Completed = true;
@@ -186,7 +181,7 @@ namespace CP.Storage.Compressors.Parallelization
                 while (!chunk.Completed)
                     await Task.Delay(1);
 
-                await destination.WriteAsync(chunk.OutputStream.GetBuffer(), 0, (int)chunk.OutputStream.Length);
+                await destination.WriteAsync(chunk.OutputStream.GetBuffer(), 0, (int) chunk.OutputStream.Length);
             }
         }
     }
