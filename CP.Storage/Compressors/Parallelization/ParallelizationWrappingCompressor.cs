@@ -35,14 +35,14 @@ namespace CP.Storage.Compressors.Parallelization
             _decompressionChunks = new BlockingCollection<Chunk>(degreeOfParalelization);
         }
 
-        public ParallelizationWrappingCompressor(ICompressor wrappedCompressor, IProgress<int> progress, int degreeOfParalelization, int chunkSize = 1 * Constants.Sizes.MB)
+        public ParallelizationWrappingCompressor(ICompressor wrappedCompressor, IProgress<int> progress, int degreeOfParallelization, int chunkSize = 1 * Constants.Sizes.MB)
         {
             _wrappedCompressor = wrappedCompressor;
             _progress = progress;
             _chunkSize = chunkSize;
 
-            _compressionChunks = new BlockingCollection<Chunk>(degreeOfParalelization);
-            _decompressionChunks = new BlockingCollection<Chunk>(degreeOfParalelization);
+            _compressionChunks = new BlockingCollection<Chunk>(degreeOfParallelization);
+            _decompressionChunks = new BlockingCollection<Chunk>(degreeOfParallelization);
         }
 
         /// <summary>
