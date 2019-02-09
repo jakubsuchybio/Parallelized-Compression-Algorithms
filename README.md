@@ -51,5 +51,5 @@ For the fastest speed and smallest overhead use chunksize:<br>
 Q: Why using BlockingCollection?<br>
 A: By using BlockingCollection we throttle ussage of memory resources. It is because if we wouldn't throttle that, we could easily run out of memory when compressing some really large files (3GB+). We actualy do not throttle anything, because compressing and decompressing is much slower that file read/write, so the real bottleneck are tasks that are doing compression/decompression.
 
-Q: This is useless. Compressed files from this are not readable by any software! Why?
+Q: This is useless. Compressed files from this are not readable by any software! Why?<br>
 A: Well, because we are bending the compression algorithms by compressing chunks of previous file. So this library is only usable for projects that do the compression and also the decompression themselves. You can't use this for compressing in your software and having someone else decompress it elsewere.
