@@ -14,7 +14,7 @@ namespace ParallelCompression.Benchmark
         public static void Run()
         {
             int[] chunkSizes = {1 * Constants.Sizes.MB, 2 * Constants.Sizes.MB, 3 * Constants.Sizes.MB, 4 * Constants.Sizes.MB, 5 * Constants.Sizes.MB};
-            int[] degreesOfParalelization = {Environment.ProcessorCount, Environment.ProcessorCount * 2};
+            int[] degreesOfParalelization = {Environment.ProcessorCount};
             var compressorsAndCompressionLevels = new List<(ICompressor, int[])>
             {
                 (new IonicGZipCompressor(), new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}),
