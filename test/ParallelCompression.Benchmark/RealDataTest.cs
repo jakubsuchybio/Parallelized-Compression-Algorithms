@@ -13,6 +13,8 @@ namespace ParallelCompression.Benchmark
     {
         public static void Run()
         {
+            string dirPath = @"c:\Users\suchyj\Downloads\zrychleni\";
+
             int[] chunkSizes = {1 * Constants.Sizes.MB, 2 * Constants.Sizes.MB, 3 * Constants.Sizes.MB, 4 * Constants.Sizes.MB, 5 * Constants.Sizes.MB};
             int[] degreesOfParalelization = {Environment.ProcessorCount};
             var compressorsAndCompressionLevels = new List<(ICompressor, int[])>
@@ -34,10 +36,10 @@ namespace ParallelCompression.Benchmark
                 var sw = new Stopwatch();
                 var mw = new MemoryWatch();
 
-                File.Delete(@"c:\Users\info\Downloads\zrychleni\compressed.ERD");
+                File.Delete(Path.Combine(dirPath,"compressed.ERD"));
 
-                using (var input = new FileStream(@"c:\Users\info\Downloads\zrychleni\H_b3ef3991-90df-41a9-bf8e-a44f9066f6e9.ERD", FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (var compressed = new FileStream(@"c:\Users\info\Downloads\zrychleni\compressed.ERD", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
+                using (var input = new FileStream(Path.Combine(dirPath,"H_b3ef3991-90df-41a9-bf8e-a44f9066f6e9.ERD"), FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var compressed = new FileStream(Path.Combine(dirPath,"compressed.ERD"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
                 {
                     var parallelCompressor = new ParallelizationWrappingCompressor(compressor, null, degreeOfParalelization, chunkSize);
 
@@ -55,11 +57,11 @@ namespace ParallelCompression.Benchmark
             {
                 var sw = new Stopwatch();
                 var mw = new MemoryWatch();
+                    
+                File.Delete(Path.Combine(dirPath,"compressed.ERD"));
 
-                File.Delete(@"c:\Users\info\Downloads\zrychleni\compressed.ERD");
-
-                using (var input = new FileStream(@"c:\Users\info\Downloads\zrychleni\H_b3ef3991-90df-41a9-bf8e-a44f9066f6e9.ERD", FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (var compressed = new FileStream(@"c:\Users\info\Downloads\zrychleni\compressed.ERD", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
+                using (var input = new FileStream(Path.Combine(dirPath,"H_b3ef3991-90df-41a9-bf8e-a44f9066f6e9.ERD"), FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var compressed = new FileStream(Path.Combine(dirPath,"compressed.ERD"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
                 {
                     sw.Start();
                     mw.Start();
