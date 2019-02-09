@@ -44,7 +44,27 @@ namespace ParallelCompression.Benchmark
                     parallelCompressor.Compress(input, compressed, compressionlevel);
                     mw.Stop();
                     sw.Stop();
-                    Console.WriteLine($"Compressor: {compressor.GetType()} ChunkSize: {chunkSize} Parallelization: {degreeOfParalelization} CompressLevel: {compressionlevel} CompressRatio: {(double) input.Length / compressed.Length} Speed: {sw.Elapsed.TotalSeconds} MemMAX: {mw.MaximumMemoryAllocation} MemAVG: {mw.AverageMemoryAllocation}");
+                    Console.WriteLine($"ParallelCompressor: {compressor.GetType()} ChunkSize: {chunkSize} Parallelization: {degreeOfParalelization} CompressLevel: {compressionlevel} CompressRatio: {(double) input.Length / compressed.Length} Speed: {sw.Elapsed.TotalSeconds} MemMAX: {mw.MaximumMemoryAllocation} MemAVG: {mw.AverageMemoryAllocation}");
+                }
+            }
+
+            foreach (var (compressor, compressionLevels) in compressorsAndCompressionLevels)
+            foreach (int compressionlevel in compressionLevels)
+            {
+                var sw = new Stopwatch();
+                var mw = new MemoryWatch();
+
+                File.Delete(@"c:\Users\info\Downloads\zrychleni\compressed.ERD");
+
+                using (var input = new FileStream(@"c:\Users\info\Downloads\zrychleni\H_b3ef3991-90df-41a9-bf8e-a44f9066f6e9.ERD", FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var compressed = new FileStream(@"c:\Users\info\Downloads\zrychleni\compressed.ERD", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
+                {
+                    sw.Start();
+                    mw.Start();
+                    compressor.Compress(input, compressed, compressionlevel);
+                    mw.Stop();
+                    sw.Stop();
+                    Console.WriteLine($"Compressor: {compressor.GetType()} ChunkSize: {0} Parallelization: {0} CompressLevel: {compressionlevel} CompressRatio: {(double) input.Length / compressed.Length} Speed: {sw.Elapsed.TotalSeconds} MemMAX: {mw.MaximumMemoryAllocation} MemAVG: {mw.AverageMemoryAllocation}");
                 }
             }
         }
