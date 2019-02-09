@@ -7,6 +7,7 @@
             public const string Deflate = ".def";
             public const string GZip = ".gz";
             public const string LZ4 = ".lz4";
+            public const string Brotli = ".br";
         }
 
         public static class Sizes
