@@ -22,7 +22,8 @@ namespace ParallelCompression.Benchmark
                 (new GZipCompressor(), new[] {2, 1, 0}),
                 (new DeflateCompressor(), new[] {2, 1, 0}),
                 (new LZ4Compressor(), new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}),
-                (new BrotliCompressor(), new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})
+                (new BrotliCompressor(), new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+                (new ZStandardCompressor(), new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22})
             };
 
             foreach (var (compressor, compressionLevels) in compressorsAndCompressionLevels)
