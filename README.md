@@ -3,7 +3,7 @@ In modern era of multi-core CPUs this is a problem.
 
 Goal of this repository is to determine the best algorithm and parameters for given file type structure. e.g. Your application generates binary file in some format with some data. This library should help you find best algorithm with parameters best suited to your file structure type.
 
-***[Here is a test results for 2GB binary file of ECG signal](TEST_RESULT_2GB_BINARY_FILE.md)***<br>
+**[Here is a test results for 2GB binary file of ECG signal](TEST_RESULT_2GB_BINARY_FILE.md)**<br>
 We are looking for the best CompressionRatio/Speed, which in this case is:
 
 | Algorithm             | Chunk | Threads | CmprssLvl | CmprsRatio  | Speed [s] | MemoryMAX | MemoryAVG | 
