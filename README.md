@@ -3,17 +3,7 @@ In modern era of multi-core CPUs this is a problem.
 
 Goal of this repository is to determine the best algorithm and parameters for given file type structure. e.g. Your application generates binary file in some format with some data. This library should help you find best algorithm with parameters best suited to your file structure type.
 
-**[Here is a test results for 2GB binary file of ECG signal](TEST_RESULT_2GB_BINARY_FILE.md)**<br>
-We are looking for the best CompressionRatio/Speed, which in this case is:
-
-| Algorithm             | Chunk | Threads | CmprssLvl | CmprsRatio  | Speed [s] | MemoryMAX | MemoryAVG | 
-|-----------------------|-------|---------|-----------|-------------|-----------|-----------|-----------|
-| Parallel_IonicDeflate | 3MB   | 8       | 3         | 1.248183754 | 39.91     | 316.45 MB | 128.16 MB |
-| Deflate               | 0     | 0       | Optimal   | 1.242586088 | 57.37     | 2.93 MB   | 2.87 MB   | 
-| **Parallel_Deflate**      | **5MB**   | **8**       | **Optimal**   | **1.242418134** | **11.24**     | **507.45 MB** | **212.34 MB** |
-      
-Compared to the best Compression Ratio of 1.248183754 it is just slightly less.
-Also compared to the non-parallel version of Deflate it is more than 5x faster on 8 threads. We use a lot of peak memory vs non-parallel version, but with today's PCs this is nothing.
+**[Here is a test results for 2GB binary file of ECG signal](TEST_RESULT_2GB_BINARY_FILE.md)**
 
 **This library contains 3 projects:**
 - src/ParallelizeCompression - This contains ICompressor interface, ParallelWrapper that wraps another compressor and parallelizes compression and decompression and few implementations of compression algorithms
