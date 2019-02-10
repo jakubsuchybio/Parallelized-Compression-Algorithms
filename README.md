@@ -26,6 +26,8 @@ Also compared to the non-parallel version of Deflate it is more than 5x faster o
 - Deflate (Ionic.Zlib nuget)
 - GZip (Ionic.Zlib nuget)
 - LZ4 (K4os.Compression.LZ4.Streams nuget)
+- Brotli (BrotliSharpLib nuget)
+- Zstandard (Zstandard.Net nuget)
 
 **Parameters:**
 - ChunkSize - Size of one chunk in bytes. (Optimal are one digits of MB (1MB,3MB,5MB))
